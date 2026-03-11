@@ -1,0 +1,54 @@
+import { useState, useEffect } from "react";
+import { getWatchProviders } from "../services/tmdb";
+
+function MovieCard({ movie }) {
+  const [providers, setProviders] = useState([]);
+
+  useEffect(() => {
+    async function fetchProviders() {
+      const data = await getWatchProviders(movie.id);
+      setProviders(data);
+    }
+    fetchProviders();
+  }, [movie.id]);
+
+  const posterUrl = movie.poster_path
+    ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
+    : "https://placehold.co/300x450?text=Sem+Poster";
+
+  const year = movie.release_date ? movie.release_date.split("-")[0] : "N/A";
+
+  return (
+    <div className="bg-gray-800 rounded-lg overflow-hidden w-48">
+      <img src={posterUrl} alt={movie.title} className="w-full" />
+      <div className="p-3">
+        <h3 className="text-white font-bold text-sm">{movie.title}</h3>
+        <p className="text-yellow-400 text-sm">
+          ⭐ {movie.vote_average.toFixed(1)}
+        </p>
+        <p className="text-gray-400 text-sm">{year}</p>
+
+        {providers.length > 0 ? (
+          <div className="mt-2">
+            <p className="text-gray-400 text-xs mb-1">Disponível em:</p>
+            <div className="flex flex-wrap gap-1">
+              {providers.map((provider) => (
+                <img
+                  key={provider.provider_id}
+                  src={`https://image.tmdb.org/t/p/w45${provider.logo_path}`}
+                  alt={provider.provider_name}
+                  title={provider.provider_name}
+                  className="w-6 h-6 rounded"
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="text-gray-500 text-xs mt-2">Sem streaming no BR</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default MovieCard;
