@@ -24,9 +24,26 @@ const GENRES = [
   { id: 12, label: "Aventura" },
 ];
 
+const SORT_OPTIONS = [
+  { label: "Mais Popular", value: "popularity.desc" },
+  { label: "Melhor Avaliado", value: "vote_average.desc" },
+];
+
+const DECADES = [
+  { label: "60s", value: 1960 },
+  { label: "70s", value: 1970 },
+  { label: "80s", value: 1980 },
+  { label: "90s", value: 1990 },
+  { label: "2000s", value: 2000 },
+  { label: "2010s", value: 2010 },
+  { label: "2020s", value: 2020 },
+];
+
 function Mood() {
   const [selectedMood, setSelectedMood] = useState(null);
   const [selectedGenre, setSelectedGenre] = useState(null);
+  const [selectedSort, setSelectedSort] = useState("popularity.desc");
+  const [selectedDecade, setSelectedDecade] = useState(null);
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -36,7 +53,7 @@ function Mood() {
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedMood, selectedGenre]);
+  }, [selectedMood, selectedGenre, selectedSort, selectedDecade]);
 
   async function handleSearch() {
     if (!selectedMood && !selectedGenre) return;
@@ -47,7 +64,11 @@ function Mood() {
       genreIds.push(selectedGenre);
     }
 
-    const results = await getMoviesByMood(genreIds);
+    const results = await getMoviesByMood(
+      genreIds,
+      selectedSort,
+      selectedDecade
+    );
     setMovies(results);
     setLoading(false);
   }
@@ -75,9 +96,7 @@ function Mood() {
         ))}
       </div>
 
-      <h2 className="text-white text-2xl font-bold mb-4">
-        Filtrar por gênero:
-      </h2>
+      <h2 className="text-white text-2xl font-bold mb-4">Filtrar por gênero:</h2>
 
       <div className="flex flex-wrap gap-2 mb-8">
         {GENRES.map((genre) => (
@@ -92,6 +111,44 @@ function Mood() {
             }}
           >
             {genre.label}
+          </button>
+        ))}
+      </div>
+
+      <h2 className="text-white text-2xl font-bold mb-4">Ordenar por:</h2>
+
+      <div className="flex flex-wrap gap-2 mb-8">
+        {SORT_OPTIONS.map((option) => (
+          <button
+            key={option.value}
+            onClick={() => setSelectedSort(option.value)}
+            className="px-4 py-2 rounded-lg font-semibold transition-colors"
+            style={{
+              backgroundColor:
+                selectedSort === option.value ? "#E50914" : "#1F1F1F",
+              color: "white",
+            }}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+
+      <h2 className="text-white text-2xl font-bold mb-4">Por década:</h2>
+
+      <div className="flex flex-wrap gap-2 mb-8">
+        {DECADES.map((decade) => (
+          <button
+            key={decade.value}
+            onClick={() => setSelectedDecade(decade.value)}
+            className="px-4 py-2 rounded-lg font-semibold transition-colors"
+            style={{
+              backgroundColor:
+                selectedDecade === decade.value ? "#E50914" : "#1F1F1F",
+              color: "white",
+            }}
+          >
+            {decade.label}
           </button>
         ))}
       </div>
