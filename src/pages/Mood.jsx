@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getMoviesByMood } from "../services/tmdb";
 import MovieCard from "../components/MovieCard";
 
 const MOODS = [
-  { label: "Animado", genres: [28, 12] }, // Ação, Aventura
-  { label: "Romântico", genres: [10749] }, // Romance
-  { label: "Com Medo", genres: [27, 53] }, // Terror, Thriller
-  { label: "Pensativo", genres: [18, 36] }, // Drama, História
-  { label: "Querendo Rir", genres: [35] }, // Comédia
-  { label: "Maravilhado", genres: [878, 14] }, // Ficção, Fantasia
+  { label: "Animado", genres: [28, 12] },
+  { label: "Romântico", genres: [10749] },
+  { label: "Com Medo", genres: [27, 53] },
+  { label: "Pensativo", genres: [18, 36] },
+  { label: "Querendo Rir", genres: [35] },
+  { label: "Maravilhado", genres: [878, 14] },
 ];
 
 const GENRES = [
@@ -29,6 +29,14 @@ function Mood() {
   const [selectedGenre, setSelectedGenre] = useState(null);
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Enter") handleSearch();
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedMood, selectedGenre]);
 
   async function handleSearch() {
     if (!selectedMood && !selectedGenre) return;
@@ -98,7 +106,7 @@ function Mood() {
 
       {loading && <p className="text-white">Carregando...</p>}
 
-      <div className="flex flex-wrap gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         {movies.map((movie) => (
           <MovieCard key={movie.id} movie={movie} />
         ))}
